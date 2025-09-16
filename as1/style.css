@@ -1,0 +1,70 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: system-ui, -apple-system, "PingFang TC", "Noto Sans TC", sans-serif;
+  line-height: 1.6;
+  color: #222;
+  background: #fff;
+}
+
+.site-header, .site-footer {
+  padding: 12px 16px;
+  border-bottom: 1px solid #eee;
+  background: #fff;
+}
+.site-footer { border-top: 1px solid #eee; border-bottom: none; }
+
+.site-header h1 { margin: 0; font-size: 1.5rem; }
+.site-header nav {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+}
+.site-header nav a { text-decoration: none; color: inherit; }
+
+main { max-width: 960px; margin: 24px auto; padding: 0 16px; }
+
+.hero {
+  background: #fafafa;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: stretch;
+  margin-top: 16px;
+}
+.card {
+  flex: 1 1 260px;       /* min 寬 260px，不夠就自動換行 */
+  border: 1px solid #eee;
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+}
+.btn {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.contact {
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+}
+.note { font-size: 0.9rem; color: #555; margin-top: 8px; }
+
+@media (max-width: 640px) {
+  .site-header nav { flex-wrap: wrap; }
+  .cards { flex-direction: column; }
+}

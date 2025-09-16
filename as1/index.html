@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <title>AS#1 個人首頁（高翊禎 Zanna）</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="NTU BICD student personal homepage">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>高翊禎 Zanna｜個人首頁</h1>
+    <nav aria-label="主選單">
+      <a href="#about">關於我</a>
+      <a href="#works">作品</a>
+      <a href="#contact">聯絡</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="about" class="hero">
+      <h2>關於我</h2>
+      <p>台大生傳系四年級，關注行銷、大眾傳播與棒球領域。</p>
+    </section>
+
+    <!-- 三欄並排：課堂原本示範 float，這裡改用 flex（extra 要求） -->
+    <section id="works" class="cards" aria-label="三欄作品卡">
+      <article class="card">
+        <h3>人物訪談</h3>
+        <p>紀錄棒球場外的人物故事。</p>
+        <a class="btn" href="#" aria-label="查看人物訪談剪輯">查看</a>
+      </article>
+      <article class="card">
+        <h3>ABS 電子好球帶</h3>
+        <p>ABS 挑戰制規則與國際使用現況科普。</p>
+        <a class="btn" href="#" aria-label="查看 ABS 電子好球帶示意">查看</a>
+      </article>
+      <article class="card">
+        <h3>社群企劃</h3>
+        <p>中華職棒戰績週報。</p>
+        <a class="btn" href="#" aria-label="查看社群內容企劃">查看</a>
+      </article>
+    </section>
+
+    <section id="contact" class="contact">
+      <h2>聯絡</h2>
+      <address>
+        Email：b11610047@ntu.edu.tw
+      </address>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>© 2025 Zanna</small>
+  </footer>
+</body>
+</html>
