@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="zh-tw">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Assignment 4｜台東球場事件 Webtoon 敘事</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg sticky-nav">
+    <div class="container">
+      <a class="navbar-brand" href="#">台東球場事件</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#section1">被擋住的視線</a></li>
+          <li class="nav-item"><a class="nav-link" href="#section2">難以平息的怒火</a></li>
+          <li class="nav-item"><a class="nav-link" href="#section3">死亡威脅在社群發酵</a></li>
+          <li class="nav-item"><a class="nav-link" href="#section4">衝突蔓延</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <section id="section1" class="scene">
+    <div class="sticky-top vh-100 d-flex justify-content-center align-items-center image-container">
+      <img src="images/01.png" alt="幕一" class="img-fluid">
+      <div class="floating-card right reveal">
+        <h2>被擋住的視線</h2>
+        <p>26 歲的日籍男大生連續兩天到台東棒球場看球，卻被前排熱情應援的女球迷擋住視線，完全看不到前方。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="section2" class="scene">
+    <div class="sticky-top vh-100 d-flex justify-content-center align-items-center image-container">
+      <img src="images/02.png" alt="幕二" class="img-fluid">
+      <div class="floating-card left reveal">
+        <h2>難以平息的怒火</h2>
+        <p>怒氣逐漸升溫的他，忍不住拍下前方球迷的照片，在 Threads 上發文寫下：「總有一天要殺掉這些傢伙（こいつらいつか殺す）」。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="section3" class="scene">
+    <div class="sticky-top vh-100 d-flex justify-content-center align-items-center image-container">
+      <img src="images/03.png" alt="幕三" class="img-fluid">
+      <div class="floating-card right reveal">
+        <h2>死亡威脅在社群發酵</h2>
+        <p>現場，一位球迷朋友看到這則威脅性貼文後立刻報警。警方與工作人員來到觀眾席，隨後將當事人帶回了解。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="section4" class="scene">
+    <div class="sticky-top vh-100 d-flex justify-content-center align-items-center image-container">
+      <img src="images/04.png" alt="幕四" class="img-fluid">
+      <div class="floating-card left reveal">
+        <h2>衝突蔓延</h2>
+        <p>看到貼文的女球迷停下手中的應援，強烈的恐懼感湧上心頭，「第一次跳應援跳到要被殺死。」畢竟，發文的人就坐在他的正後方，恐怖的言詞已經影響到他看球的心情。
+</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="credits" class="endcap vh-100 d-flex align-items-center">
+    <div class="container text-center reveal">
+      <h3>圖片生成工具與過程</h3>
+      <p>這次作業中，我使用 Nano Banana 作為主要的圖片生成工具，透過 ChatGPT 協助撰寫精確的 prompt，創造出四張風格統一、劇情連貫的漫畫。</p>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, { threshold: 0.25 });
+    reveals.forEach(r => observer.observe(r));
+  </script>
+</body>
+</html>
