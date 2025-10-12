@@ -21,7 +21,7 @@ body {
   backdrop-filter: blur(8px);
   border-radius: 16px;
   padding: 28px;
-  max-width: 560px; /* ⬅️ 從原本的400加大到560 */
+  max-width: 400px; /* 
   color: #e6e9ef;
   box-shadow: 0 8px 24px rgba(0,0,0,0.25);
   line-height: 1.8; /* ⬅️ 行距稍加寬 */
@@ -106,3 +106,4 @@ body {
   0% { filter: brightness(1); }
   100% { filter: brightness(1.08); }
 }
+
