@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>立德球場：城市球場的前世今生</title>
+
+  <!-- Bootstrap 5 CSS (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- jQuery 3.6 (CDN) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- Bootstrap 5 Bundle JS (Popper included) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <style>
+    :root{
+      --progress-bg: rgba(0,0,0,0.08);
+      --progress-color: #0d6efd;
+      --overlay-bg: rgba(0,0,0,0.55);
+      --control-bg: rgba(0,0,0,0.6);
+      --control-btn-bg: rgba(255,255,255,0.08);
+      --max-width: 1200px;
+    }
+
+    html,body{
+      height:100%;
+      margin:0;
+      font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans TC", "PingFang TC", "微軟正黑體", "Microsoft JhengHei", sans-serif;
+      color:#fff;
+      background:#000;
+    }
+
+    /* Top progress bar */
+    .scroll-progress-wrap{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:4px;
+      background:var(--progress-bg);
+      z-index:1050;
+    }
+    .scroll-progress{
+      height:100%;
+      width:0%;
+      background:var(--progress-color);
+      transition:width 0.12s linear;
+    }
+
+    /* Landing */
+    .landing{
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      padding:2rem;
+      background: linear-gradient(180deg, rgba(0,0,0,0.35), rgba(0,0,0,0.65));
+    }
+    .landing .title{
+      font-size:clamp(28px,6vw,56px);
+      font-weight:700;
+      margin-bottom:0.5rem;
+      letter-spacing:0.4px;
+    }
+    .landing .subtitle{
+      font-size:clamp(14px,2.4vw,20px);
+      opacity:0.9;
+    }
+
+    /* Onboarding / Theme section */
+    .onboarding{
+      display:flex;
+      gap:2rem;
+      min-height:200vh;
+      padding:4rem 1rem;
+      align-items:flex-start;
+      max-width:var(--max-width);
+      margin:0 auto;
+    }
+
+    /* left sticky 2x2 video grid */
+    .video-grid-wrap{
+      flex:0 0 48%;
+      position:relative;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .video-grid{
+      position:sticky;
+      top:50%;
+      transform:translateY(-50%);
+      width:100%;
+      height:min(80vh, 720px);
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      grid-template-rows:1fr 1fr;
+      gap:10px;
+    }
+    .video-grid video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      background:#111;
+      border-radius:6px;
+      box-shadow:0 6px 18px rgba(0,0,0,0.6);
+    }
+
+    /* right long text column */
+    .theme-text{
+      flex:1;
+      min-height:200vh;
+      overflow:visible;
+      padding:1rem 0;
+    }
+    .theme-text .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border:none;
+      color:#eee;
+      padding:2rem;
+      border-radius:8px;
+      box-shadow:0 6px 30px rgba(0,0,0,0.6);
+    }
+    .theme-text h3{margin-top:0;}
+
+    /* Chapters */
+    .chapter{
+      position:relative;
+      min-height:200vh;
+      overflow:visible;
+      color:#fff;
+      display:block;
+    }
+    .chapter .scene-video{
+      position:sticky;
+      top:0;
+      left:0;
+      width:100%;
+      height:100vh;
+      z-index:1;
+      object-fit:cover;
+      background:#000;
+    }
+    .chapter .overlay{
+      position:relative;
+      z-index:2;
+      min-height:200vh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:3rem 1rem;
+      background:linear-gradient(transparent, rgba(0,0,0,0.25));
+      margin-top:-100vh; /* ensure overlay sits above video from start */
+    }
+    .overlay .container{
+      max-width:var(--max-width);
+    }
+    .content-box{
+      background:var(--overlay-bg);
+      padding:2rem;
+      border-radius:8px;
+      box-shadow:0 10px 40px rgba(0,0,0,0.6);
+      min-height:200vh;
+    }
+    .content-box h2{
+      margin-top:0;
+      font-size:clamp(20px,3vw,32px);
+      margin-bottom:1rem;
+    }
+    .content-box p{color:#ddd;line-height:1.75;margin-bottom:1rem;}
+
+    /* control panel bottom-right */
+    .video-controls{
+      position:fixed;
+      right:1rem;
+      bottom:1rem;
+      z-index:1060;
+      background:var(--control-bg);
+      padding:0.5rem;
+      border-radius:10px;
+      display:flex;
+      gap:0.5rem;
+      align-items:center;
+      box-shadow:0 8px 30px rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+    }
+    .video-controls button{
+      color:#fff;
+      background:var(--control-btn-bg);
+      border:1px solid rgba(255,255,255,0.06);
+      padding:0.45rem 0.8rem;
+      border-radius:6px;
+      font-size:14px;
+    }
+    .video-controls button:hover{filter:brightness(1.08);}
+
+    /* small helper spacing for readability on wide screens */
+    .spacer{height:2rem;}
+
+    /* Responsive tweaks */
+    @media (max-width:992px){
+      .onboarding{
+        flex-direction:column;
+        padding:2rem 1rem;
+      }
+      .video-grid-wrap{flex-basis:100%; width:100%;}
+      .video-grid{height:60vh;}
+      .theme-text{padding-top:1rem;}
+      .video-controls{right:0.5rem; left:0.5rem; justify-content:space-around;}
+      .content-box{padding:1.25rem;}
+    }
+    @media (max-width:576px){
+      .video-grid{grid-template-columns:1fr 1fr; gap:6px;}
+      .video-grid video{border-radius:4px;}
+      .content-box{padding:1rem;}
+      .landing .title{font-size:22px;}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top progress bar -->
+  <div class="scroll-progress-wrap" aria-hidden="true">
+    <div class="scroll-progress" id="scrollProgress"></div>
+  </div>
+
+  <!-- Landing section -->
+  <section class="landing d-flex align-items-center justify-content-center text-center">
+    <div class="container">
+      <div class="title">立德球場：城市球場的前世今生</div>
+      <div class="subtitle">從愛河河畔出發，回頭看一座曾經是職棒主場的老球場。</div>
+    </div>
+  </section>
+
+<!-- Onboarding / Theme section -->
+<section class="onboarding">
+  <div class="video-grid-wrap">
+    <div class="video-grid" aria-hidden="false">
+
+      <video class="onb-video" muted playsinline loop preload="metadata" poster="" data-index="g1">
+        <source src="video/onb1.mp4" type="video/mp4">
+      </video>
+
+      <video class="onb-video" muted playsinline loop preload="metadata" poster="" data-index="g2">
+        <source src="video/onb2.mp4" type="video/mp4">
+      </video>
+
+      <video class="onb-video" muted playsinline loop preload="metadata" poster="" data-index="g3">
+        <source src="video/onb3.mp4" type="video/mp4">
+      </video>
+
+      <video class="onb-video" muted playsinline loop preload="metadata" poster="" data-index="g4">
+        <source src="video/onb4.mp4" type="video/mp4">
+      </video>
+
+    </div>
+  </div>
+
+    <div class="theme-text">
+      <div class="card">
+        <h3>立德棒球場</h3>
+        <p>立德球場位於高雄市前金區、靠近愛河，主要承接三級棒球賽事，如立德盃與木棒聯賽等。球場容量雖然不大，但在地方球迷間擁有許多深厚的在地記憶。</p>
+
+        <h4>球場資訊</h4>
+        <p>座落地址：高雄市前金區市中一路217號</p>
+        <p>觀眾席數：1,258席</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Chapters -->
+  <!-- Chapter 1 -->
+  <section class="chapter" id="chapter-1" data-chapter="1">
+    <video class="scene-video" muted playsinline loop preload="metadata" data-chapter-video>
+      <source src="video/onb1.mp4" type="video/mp4">
+    </video>
+    <div class="overlay">
+      <div class="container">
+        <div class="content-box">
+          <h2>Chapter 1：愛河旁的小球場，為什麼這麼重要？</h2>
+          <p>高雄前金區，愛河邊有一座不大的立德球場。</p>
+          <p>現在這裡主要辦立德盃、木棒聯賽等三級棒球比賽，滿場也不到三千人，但加油聲往往會一路傳到河岸。</p>
+          <p>乍看之下，它只是貼近市區的一座「小球場」，卻曾經是職棒重要主戰場之一，也因此在台鋼進駐澄清湖後，「要不要重建立德」成了高雄棒球迷始終放不下的問題。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Chapter 2 -->
+  <section class="chapter" id="chapter-2" data-chapter="2">
+    <video class="scene-video" muted playsinline loop preload="metadata" data-chapter-video>
+      <source src="video/onb2.mp4" type="video/mp4">
+    </video>
+    <div class="overlay">
+      <div class="container">
+        <div class="content-box">
+          <h2>Chapter 2：從空地到職棒主場：立德的前世今生</h2>
+          <p>立德原名高雄市立棒球場，日治時期幾乎只是愛河邊的一塊空地，紀錄很少，只知道它位在當時市廳前，也就是現在的高雄市立歷史博物館旁。</p>
+          <p>戰後隨著高雄發展，球場輪廓在 1950–60 年代逐漸清楚，政府後來決定改建，1970 年代完工，並在 1974 年以「立德少棒」之名正式更名為立德棒球場。</p>
+          <p>職棒開打後，設備完整、位置又好的立德，很快成為南部重要主場，不但承接例行賽，也辦過多屆明星賽，是許多老球迷心中的「南部代表球場」。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Chapter 3 -->
+  <section class="chapter" id="chapter-3" data-chapter="3">
+    <video class="scene-video" muted playsinline loop preload="metadata" data-chapter-video>
+      <source src="video/onb3.mp4" type="video/mp4">
+    </video>
+    <div class="overlay">
+      <div class="container">
+        <div class="content-box">
+          <h2>Chapter 3：從滿場到退場：黃金年代留下了什麼？</h2>
+          <p>新莊、嘉義市、澄清湖等新球場啟用後，立德的一軍比賽場次開始變少，2005 年打完最後一場例行賽後，幾乎就和職棒舞台告別；2009 年為世運整建，外野改成草地，容量縮水，更難再成為職棒主場。</p>
+          <p>即便如此，這裡仍留下很多重要畫面：黃平洋在立德感到手臂不適、走下投手丘，成為台灣第一位動 TJ 手術的投手；王建民在成棒春季聯賽於此被洋基球探相中，踏上旅美之路。</p>
+          <p>對在地人來說，立德同時也是協會盃、南區高中棒球聯賽、各種業餘賽事的舞台——先在旁邊買阿英排骨飯，再翻牆看球、賽後去吃百樂冰淇淋，這些日常小事，和職棒傳奇一起構成了立德的「野球物語」。</p>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Chapter 4 -->
+  <section class="chapter" id="chapter-4" data-chapter="4">
+    <video class="scene-video" muted playsinline loop preload="metadata" data-chapter-video>
+      <source src="video/onb4.mp4" type="video/mp4">
+    </video>
+    <div class="overlay">
+      <div class="container">
+        <div class="content-box">
+          <h2>Chapter 4：城市球場 vs 近郊球場：立德之後，我們要什麼樣的球場？</h2>
+          <p>走出立德，沿著愛河往下游，可以看到歷史博物館、高流、真愛碼頭和一整排酒吧與遊船碼頭——球場其實嵌在城市生活之中。</p>
+          <p>相較之下，現在多數職棒主場，如新莊、桃園、洲際、澄清湖，多位在近郊，搭配大型商場，強調的是「娛樂」功能；雖然腹地寬廣、方便開發、，但離日常生活有一段距離。</p>
+          <p>美職匹茲堡海盜隊的 PNC Park，是另一種做法：同樣在河邊、同樣靠市區，卻透過重新規劃河岸步道、酒吧與公共空間，讓球場成為城市的一部分。</p>
+          <p>立德重建討論多年，至今仍停在「維持現狀」，短期內很難回到職棒一軍行列；但如果善用它貼近市中心、緊鄰愛河的條件，讓這裡成為連結三級棒球、在地社區與老球迷記憶的節點，也許會長出一種新的「城市球場」想像。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Controls -->
+  <div class="video-controls" role="group" aria-label="影片控制面板">
+    <button id="btnPlayAll" type="button">播放全部</button>
+    <button id="btnPauseAll" type="button">暫停全部</button>
+    <button id="btnMuteToggle" type="button" data-muted="true">取消靜音</button>
+  </div>
+
+  <script>
+    // Keep code scoped and tidy
+    $(function(){
+      // Elements
+      const $progress = $('#scrollProgress');
+      const $window = $(window);
+      const $chapters = $('.chapter');
+      const $chapterVideos = $('video[data-chapter-video]');
+      const $onbVideos = $('.onb-video');
+      const $btnPlayAll = $('#btnPlayAll');
+      const $btnPauseAll = $('#btnPauseAll');
+      const $btnMuteToggle = $('#btnMuteToggle');
+
+      // State
+      let playAllMode = false; // if true, ignore auto-pause behavior
+      let allMuted = true;
+
+      // Helper: update progress bar
+      function updateProgress(){
+        const doc = document.documentElement;
+        const scrollTop = (window.pageYOffset || doc.scrollTop) - (doc.clientTop || 0);
+        const totalHeight = doc.scrollHeight - doc.clientHeight;
+        const pct = totalHeight > 0 ? (scrollTop / totalHeight) * 100 : 0;
+        $progress.css('width', pct + '%');
+      }
+
+      // Helper: get which chapter is most prominently in viewport
+      function currentVisibleChapter(){
+        let best = null;
+        let bestRatio = 0;
+        $chapters.each(function(){
+          const rect = this.getBoundingClientRect();
+          const overlap = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
+          const ratio = overlap / Math.min(rect.height, window.innerHeight);
+          if(ratio > bestRatio){
+            bestRatio = ratio;
+            best = this;
+          }
+        });
+        return best ? $(best) : null;
+      }
+
+      // Play/pause logic
+      function autoPlayByScroll(){
+        if(playAllMode) return; // skip auto behavior
+        const $visible = currentVisibleChapter();
+        if(!$visible) return;
+        const chapIndex = parseInt($visible.attr('data-chapter'),10);
+        $chapterVideos.each(function(idx){
+          try{
+            if((idx + 1) === chapIndex){
+              const p = this.play();
+              if(p && p.catch) p.catch(()=>{/* ignore autoplay block */});
+            } else {
+              this.pause();
+            }
+          }catch(e){
+            console.warn('video control error', e);
+          }
+        });
+      }
+
+      // Controls
+      $btnPlayAll.on('click', function(){
+        playAllMode = true;
+        $chapterVideos.each(function(){ try{ this.play(); }catch(e){} });
+        $onbVideos.each(function(){ try{ this.play(); }catch(e){} });
+      });
+      $btnPauseAll.on('click', function(){
+        playAllMode = false;
+        $chapterVideos.each(function(){ try{ this.pause(); }catch(e){} });
+        $onbVideos.each(function(){ try{ this.pause(); }catch(e){} });
+      });
+      $btnMuteToggle.on('click', function(){
+        allMuted = !allMuted;
+        $('video').each(function(){ this.muted = allMuted; });
+        $(this).attr('data-muted', allMuted ? 'true' : 'false');
+        $(this).text(allMuted ? '取消靜音' : '靜音');
+      });
+
+      // Scroll handler
+      $window.on('scroll resize load', function(){
+        updateProgress();
+        autoPlayByScroll();
+      });
+
+      // Initial attempt to play first chapter's video on load
+      (function tryAutoPlayFirst(){
+        const first = $chapterVideos.get(0);
+        if(!first) return;
+        try{
+          const p = first.play();
+          if(p && p.catch){
+            p.catch(function(e){
+              console.warn('Autoplay blocked or error: ', e);
+            });
+          }
+        }catch(e){
+          console.warn('Play attempt error', e);
+        }
+      })();
+
+      // Start onboarding videos muted looping; attempt play
+      $onbVideos.each(function(){
+        try{
+          const p = this.play();
+          if(p && p.catch) p.catch(()=>{/* ignore */});
+        }catch(e){}
+      });
+
+      // Ensure all videos respect initial muted state
+      $('video').each(function(){ this.muted = allMuted; });
+
+      // Improve performance: throttle scroll handler calls
+      let ticking = false;
+      $window.on('scroll', function(){
+        if(!ticking){
+          window.requestAnimationFrame(function(){
+            updateProgress();
+            autoPlayByScroll();
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+
+      // Keyboard shortcuts (optional small helper)
+      $(document).on('keydown', function(e){
+        if(e.key === 'm' || e.key === 'M'){ $btnMuteToggle.click(); }
+        if(e.key === ' '){ e.preventDefault(); if(playAllMode){ $btnPauseAll.click(); } else { $btnPlayAll.click(); } }
+      });
+    });
+  </script>
+</body>
+</html>
