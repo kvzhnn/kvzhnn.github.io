@@ -1,0 +1,58 @@
+/* 全站基礎字級（body） */
+body {
+  font-size: 16px;           /* 基準字級，其他以此為相對參考 */
+  line-height: 1.6;
+  font-weight: 400;
+  color: #eaeaea;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Landing 主標題（.landing h1 / 舊程式碼 .landing .title） */
+.landing h1,
+.landing .title {
+  font-size: clamp(28px, 5.6vw, 56px); /* 響應式主標題 */
+  line-height: 1.05;
+  font-weight: 800;                      /* 強烈視覺主重心 */
+  letter-spacing: 0.6px;
+  margin: 0 0 0.4rem 0;
+  color: #ffffff;
+  text-wrap: balance;
+}
+
+/* 影片內容區標題（.video-content h2） */
+.video-content h2,
+.content-box h2 {
+  font-size: clamp(20px, 3.2vw, 32px);   /* 次級標題，兼顧桌機與行動 */
+  line-height: 1.15;
+  font-weight: 700;                      /* 次要但明顯的強度 */
+  margin-bottom: 0.8rem;
+  color: #fff;
+}
+
+/* 影片內容區段落（.video-content p） */
+.video-content p,
+.content-box p {
+  font-size: clamp(14px, 1.9vw, 18px);   /* 主要閱讀文字 */
+  max-width: 700px;   /* 寬度限制在 700px */
+  line-height: 1.75;
+  font-weight: 400;                      /* 正文維持可讀的常規字重 */
+  color: #e6e6e6;
+  margin-bottom: 1rem;
+}
+
+/* 小字 / 引言樣式（可選） */
+.video-content small,
+.content-box small,
+.theme-text .card small {
+  font-size: 0.9rem;
+  color: #cfcfcf;
+  font-weight: 300;
+}
+
+/* 若需更強的視覺對比，可針對章節標題加強 */
+.content-box h2.highlight {
+  font-weight: 800;
+  letter-spacing: 0.8px;
+}
+
