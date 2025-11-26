@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>氣候危機：全球城市風險圖</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- GSAP & ScrollTrigger -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;700&display=swap');
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* 滾動內容容器 */
+        #content-container {
+            position: relative;
+            z-index: 10;
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 2rem;
+            box-sizing: border-box;
+            opacity: 0.3;
+            transition: opacity 0.5s ease;
+        }
+
+        .section.active {
+            opacity: 1;
+        }
+
+        .card {
+            background: rgba(10, 20, 30, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid #3b82f6;
+            padding: 2rem;
+            max-width: 500px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: translateY(20px);
+            transition: transform 0.5s ease;
+        }
+        
+        .section.active .card {
+            transform: translateY(0);
+        }
+
+        .risk-tag {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 9999px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .risk-high { background-color: #ef4444; color: white; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+        .risk-medium { background-color: #f59e0b; color: black; }
+        .risk-info { background-color: #3b82f6; color: white; }
+
+        .align-left { justify-content: flex-start; }
+        .align-right { justify-content: flex-end; }
+        .align-center { justify-content: center; text-align: center; }
+
+        @media (max-width: 768px) {
+            .section { justify-content: center !important; }
+            .card { width: 100%; margin-top: 50vh; margin-bottom: 20vh; }
+            .align-center .card { margin-top: 0; }
+        }
+
+        /* Loading Overlay */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 1s ease;
+        }
+        .loader-bar {
+            width: 200px;
+            height: 2px;
+            background: #333;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .loader-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: #3b82f6;
+            transition: width 0.2s;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 3D 場景容器 -->
+    <div id="canvas-container"></div>
+
+    <!-- Loading 畫面 -->
+    <div id="loader">
+        <h1 class="text-2xl font-light tracking-widest text-blue-400">LOADING EARTH DATA</h1>
+        <div class="loader-bar"><div class="loader-progress" id="progress"></div></div>
+    </div>
+
+    <!-- 滾動內容 -->
+    <div id="content-container">
+        
+        <!-- Intro -->
+        <div class="section align-center active" id="sec-intro">
+            <div class="card" style="border-left-color: #fff; max-width: 600px;">
+                <span class="risk-tag risk-info">互動式報告</span>
+                <h1 class="text-4xl md:text-5xl font-bold mb-4">氣候危機下的城市</h1>
+                <p class="text-gray-300 text-lg leading-relaxed">
+                    隨著全球均溫上升 1.5°C 的警戒線逼近，世界各地的超級城市正面臨前所未有的生存挑戰。<br><br>
+                    向下滾動，檢視我們共同的未來。
+                </p>
+                <div class="mt-8 animate-bounce text-gray-500">
+                    ▼ 滾動開始
+                </div>
+            </div>
+        </div>
+
+        <!-- Taipei (Added) -->
+        <div class="section align-left" id="sec-taipei">
+            <div class="card">
+                <span class="risk-tag risk-high">盆地蓄熱</span>
+                <h2 class="text-3xl font-bold mb-2">台北, 台灣</h2>
+                <p class="text-gray-400 text-sm mb-4">座標: 25.0330° N, 121.5654° E</p>
+                <p class="text-gray-300 leading-relaxed">
+                    作為一個四面環山的盆地城市，台北深受「都市熱島效應」之苦。夏季極端高溫日數持續增加，散熱不易，加上極端降雨帶來的瞬間積水風險，正考驗著這座高密度城市的韌性。
+                </p>
+            </div>
+        </div>
+
+        <!-- Jakarta -->
+        <div class="section align-right" id="sec-jakarta">
+            <div class="card">
+                <span class="risk-tag risk-high">下沉危機</span>
+                <h2 class="text-3xl font-bold mb-2">雅加達, 印尼</h2>
+                <p class="text-gray-400 text-sm mb-4">座標: 6.2088° S, 106.8456° E</p>
+                <p class="text-gray-300 leading-relaxed">
+                    作為世界上地層下陷最快的城市之一，部分地區每年下沉達 25 公分。加上海平面上升，迫使印尼政府計畫將首都遷往婆羅洲的努山塔拉。
+                </p>
+            </div>
+        </div>
+
+        <!-- Mumbai (Added) -->
+        <div class="section align-left" id="sec-mumbai">
+            <div class="card">
+                <span class="risk-tag risk-high">洪水侵襲</span>
+                <h2 class="text-3xl font-bold mb-2">孟買, 印度</h2>
+                <p class="text-gray-400 text-sm mb-4">座標: 19.0760° N, 72.8777° E</p>
+                <p class="text-gray-300 leading-relaxed">
+                    這座印度的金融心臟正面臨嚴重的季風洪水威脅。不透水的城市表面加劇了排水困難，預計到 2050 年，孟買南部的大部分地區可能每年都會面臨淹水風險。
+                </p>
+            </div>
+        </div>
+
+        <!-- Tokyo -->
+        <div class="section align-right" id="sec-tokyo">
+            <div class="card">
+                <span class="risk-tag risk-medium">超級颱風</span>
+                <h2 class="text-3xl font-bold mb-2">東京, 日本</h2>
+                <p class="text-gray-400 text-sm mb-4">座標: 35.6762° N, 139.6503° E</p>
+                <p class="text-gray-300 leading-relaxed">
+                    雖然擁有世界級的防洪地下宮殿，但氣候變遷導致的「超級颱風」強度不斷刷新紀錄。東京灣區域面臨的風暴潮風險急劇增加，極端降雨考驗著城市的排水極限。
+                </p>
+            </div>
+        </div>
+
+        <!-- New York -->
+        <div class="section align-left" id="sec-ny">
+            <div class="card">
+                <span class="risk-tag risk-high">海平面上升</span>
+                <h2 class="text-3xl font-bold mb-2">紐約, 美國</h2>
+                <p class="text-gray-400 text-sm mb-4">座標: 40.7128° N, 74.0060° W</p>
+                <p class="text-gray-300 leading-relaxed">
+                    颶風桑迪 (Sandy) 曾讓華爾街陷入黑暗。預計到 2050 年，紐約周邊的海平面將上升 8-30 英寸，曼哈頓下城區遭受常態性洪水的頻率將大幅提升，威脅全球金融中心的安全。
+                </p>
+            </div>
+        </div>
+
+        <!-- Rio (Added) -->
+        <div class="section align-right" id="sec-rio">
+            <div class="card">
+                <span class="risk-tag risk-medium">土石流風險</span>
+                <h2 class="text-3xl font-bold mb-2">里約熱內盧, 巴西</h2>
+                <p class="text-gray-400 text-sm mb-4">座標: 22.9068° S, 43.1729° W</p>
+                <p class="text-gray-300 leading-relaxed">
+                    極端降雨頻發導致這座山海之城面臨嚴峻的土石流風險。貧民窟多建於陡峭山坡上，是最脆弱的氣候受災區，同時高溫也加劇了登革熱等疾病的傳播。
+                </p>
+            </div>
+        </div>
+
+        <!-- London -->
+        <div class="section align-left" id="sec-london">
+            <div class="card">
+                <span class="risk-tag risk-medium">極端熱浪</span>
+                <h2 class="text-3xl font-bold mb-2">倫敦, 英國</h2>
+                <p class="text-gray-400 text-sm mb-4">座標: 51.5074° N, 0.1278° W</p>
+                <p class="text-gray-300 leading-relaxed">
+                    這座以陰雨聞名的城市，基礎設施並非為高溫設計。然而近年來，倫敦夏季氣溫屢破 40°C，導致鐵軌變形、機場跑道融化，城市熱島效應讓居民面臨嚴峻的健康風險。
+                </p>
+            </div>
+        </div>
+
+        <!-- Sydney -->
+        <div class="section align-right" id="sec-sydney">
+            <div class="card">
+                <span class="risk-tag risk-high">野火威脅</span>
+                <h2 class="text-3xl font-bold mb-2">雪梨, 澳洲</h2>
+                <p class="text-gray-400 text-sm mb-4">座標: 33.8688° S, 151.2093° E</p>
+                <p class="text-gray-300 leading-relaxed">
+                    極度乾燥與高溫引發的「黑色夏季」野火，曾讓雪梨籠罩在橘紅色的煙霧中數週。隨著氣候變遷加劇，火災季節不僅變長，且強度更具破壞性，直接威脅城市邊緣的住宅區。
+                </p>
+            </div>
+        </div>
+
+         <!-- Call to Action -->
+         <div class="section align-center" id="sec-end">
+            <div class="card" style="border-left-color: #10b981;">
+                <span class="risk-tag" style="background:#10b981;">行動時刻</span>
+                <h2 class="text-3xl font-bold mb-4">未來的選擇權</h2>
+                <p class="text-gray-300 leading-relaxed mb-6">
+                    這些不僅僅是數據，而是數億人的生活現實。<br>
+                    減少碳排放、支持永續能源、關注氣候政策。<br>
+                    地球只有一個。
+                </p>
+                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full transition duration-300" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                    回到起點
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 註冊 GSAP ScrollTrigger
+        gsap.registerPlugin(ScrollTrigger);
+
+        // --- 全域變數 ---
+        let scene, camera, renderer;
+        let earth, clouds, atmosphere, starField;
+        let markers = []; 
+        const container = document.getElementById('canvas-container');
+
+        // 目標數據：包含經緯度和視角配置
+        const waypoints = [
+            { id: "sec-intro",   lat: 25,  lon: 121, dist: 2.8 },
+            { id: "sec-taipei",  lat: 25.03, lon: 121.56, dist: 1.6 },
+            { id: "sec-jakarta", lat: -6.2, lon: 106.8, dist: 1.8 },
+            { id: "sec-mumbai",  lat: 19.07, lon: 72.87, dist: 1.8 },
+            { id: "sec-tokyo",   lat: 35.6, lon: 139.6, dist: 1.8 },
+            { id: "sec-ny",      lat: 40.7, lon: -74.0, dist: 1.8 },
+            { id: "sec-rio",     lat: -22.9, lon: -43.1, dist: 1.8 },
+            { id: "sec-london",  lat: 51.5, lon: -0.1,  dist: 1.8 },
+            { id: "sec-sydney",  lat: -33.8, lon: 151.2, dist: 1.8 },
+            { id: "sec-end",     lat: 25,  lon: 121, dist: 3.2 }
+        ];
+
+        // --- 初始化 Three.js 場景 ---
+        function init() {
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x000000, 0.02);
+
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 2.5;
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0x333333);
+            scene.add(ambientLight);
+
+            const sunLight = new THREE.DirectionalLight(0xffffff, 1.5);
+            sunLight.position.set(5, 3, 5);
+            scene.add(sunLight);
+            
+            const backLight = new THREE.DirectionalLight(0x002288, 1.0);
+            backLight.position.set(-5, -3, -5);
+            scene.add(backLight);
+
+            createEarth();
+            createStars();
+            createMarkers(); // 這裡使用第一版的標記生成邏輯
+
+            window.addEventListener('resize', onWindowResize, false);
+            simulateLoading();
+            animate();
+            setupScrollAnimations();
+        }
+
+        // --- 建立地球與大氣層 ---
+        function createEarth() {
+            const earthGroup = new THREE.Group();
+            scene.add(earthGroup);
+            earth = earthGroup;
+
+            const loader = new THREE.TextureLoader();
+            const mapUrl = 'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg';
+            const bumpUrl = 'https://unpkg.com/three-globe/example/img/earth-topology.png';
+            
+            const geometry = new THREE.SphereGeometry(1, 64, 64);
+            const material = new THREE.MeshPhongMaterial({
+                map: loader.load(mapUrl),
+                bumpMap: loader.load(bumpUrl),
+                bumpScale: 0.05,
+                specularMap: loader.load('https://unpkg.com/three-globe/example/img/earth-water.png'),
+                specular: new THREE.Color('grey'),
+                shininess: 10
+            });
+            const earthMesh = new THREE.Mesh(geometry, material);
+            earthGroup.add(earthMesh);
+
+            const cloudGeo = new THREE.SphereGeometry(1.01, 64, 64);
+            const cloudMat = new THREE.MeshPhongMaterial({
+                map: loader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png'),
+                transparent: true,
+                opacity: 0.8,
+                blending: THREE.AdditiveBlending,
+                side: THREE.DoubleSide
+            });
+            clouds = new THREE.Mesh(cloudGeo, cloudMat);
+            earthGroup.add(clouds);
+
+            const atmosGeo = new THREE.SphereGeometry(1.2, 64, 64);
+            const atmosMat = new THREE.MeshPhongMaterial({
+                color: 0x3b82f6,
+                transparent: true,
+                opacity: 0.1,
+                side: THREE.BackSide,
+                blending: THREE.AdditiveBlending,
+            });
+            atmosphere = new THREE.Mesh(atmosGeo, atmosMat);
+            scene.add(atmosphere);
+        }
+
+        // --- 建立星空背景 ---
+        function createStars() {
+            const starGeo = new THREE.BufferGeometry();
+            const count = 2000;
+            const positions = new Float32Array(count * 3);
+            for(let i=0; i<count * 3; i++) {
+                positions[i] = (Math.random() - 0.5) * 100;
+            }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const starMat = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 0.1,
+                transparent: true,
+                opacity: 0.8,
+                sizeAttenuation: true
+            });
+            starField = new THREE.Points(starGeo, starMat);
+            scene.add(starField);
+        }
+
+        // --- 建立城市標記 (使用第一版的 3D 針狀標記) ---
+        function createMarkers() {
+            const cities = waypoints.filter(wp => wp.id !== 'sec-intro' && wp.id !== 'sec-end');
+
+            cities.forEach(city => {
+                const pos = latLongToVector3(city.lat, city.lon, 1.02); // 半徑略大於地球
+                
+                // 1. 標記桿 (Cylinder)
+                const geometry = new THREE.CylinderGeometry(0.005, 0.005, 0.2, 8);
+                geometry.rotateX(Math.PI / 2); // 旋轉圓柱體使其從球心向外射出
+                const material = new THREE.MeshBasicMaterial({ color: 0xff3333 });
+                const marker = new THREE.Mesh(geometry, material);
+                
+                marker.position.copy(pos);
+                marker.lookAt(new THREE.Vector3(0,0,0)); // 讓底部對準球心
+                
+                // 2. 標記頭 (Sphere)
+                const headGeo = new THREE.SphereGeometry(0.02, 16, 16);
+                const headMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+                const head = new THREE.Mesh(headGeo, headMat);
+                head.position.set(0, 0, 0.1); // 位於圓柱頂端
+                marker.add(head);
+
+                // 3. 光圈 (Ring)
+                const ringGeo = new THREE.RingGeometry(0.03, 0.04, 32);
+                const ringMat = new THREE.MeshBasicMaterial({ 
+                    color: 0xff0000, 
+                    side: THREE.DoubleSide, 
+                    transparent: true, 
+                    opacity: 0.6 
+                });
+                const ring = new THREE.Mesh(ringGeo, ringMat);
+                ring.position.set(0, 0, 0.01);
+                marker.add(ring);
+
+                // 將標記加入地球 Group
+                earth.add(marker);
+                markers.push({ id: city.id, mesh: marker });
+            });
+        }
+
+        function latLongToVector3(lat, lon, radius) {
+            var phi = (90 - lat) * (Math.PI / 180);
+            var theta = (lon + 180) * (Math.PI / 180);
+
+            var x = -(radius * Math.sin(phi) * Math.cos(theta));
+            var z = (radius * Math.sin(phi) * Math.sin(theta));
+            var y = (radius * Math.cos(phi));
+
+            return new THREE.Vector3(x, y, z);
+        }
+
+        function setupScrollAnimations() {
+            waypoints.forEach((wp) => {
+                const targetRotX = (wp.lat * (Math.PI / 180));
+                const targetRotY = -((wp.lon) * (Math.PI / 180)) - Math.PI/2;
+
+                ScrollTrigger.create({
+                    trigger: `#${wp.id}`,
+                    start: "top center",
+                    end: "bottom center",
+                    onEnter: () => {
+                        gsap.to(earth.rotation, {
+                            x: targetRotX,
+                            y: targetRotY,
+                            duration: 2,
+                            ease: "power2.inOut"
+                        });
+                        gsap.to(camera.position, {
+                            z: wp.dist,
+                            duration: 2,
+                            ease: "power2.inOut"
+                        });
+                        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+                        document.getElementById(wp.id).classList.add('active');
+                    },
+                    onEnterBack: () => {
+                        gsap.to(earth.rotation, {
+                            x: targetRotX,
+                            y: targetRotY,
+                            duration: 2,
+                            ease: "power2.inOut"
+                        });
+                        gsap.to(camera.position, {
+                            z: wp.dist,
+                            duration: 2,
+                            ease: "power2.inOut"
+                        });
+                        document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+                        document.getElementById(wp.id).classList.add('active');
+                    }
+                });
+            });
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if(clouds) clouds.rotation.y += 0.0005;
+            if(starField) starField.rotation.y -= 0.0002;
+
+            renderer.render(scene, camera);
+        }
+
+        function simulateLoading() {
+            const bar = document.getElementById('progress');
+            const loader = document.getElementById('loader');
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 100) {
+                    clearInterval(interval);
+                    loader.style.opacity = 0;
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                        gsap.from(earth.scale, {x:0, y:0, z:0, duration: 1.5, ease: "back.out(1.7)"});
+                    }, 1000);
+                } else {
+                    width += Math.random() * 10;
+                    if(width > 100) width = 100;
+                    bar.style.width = width + '%';
+                }
+            }, 100);
+        }
+
+        init();
+    </script>
+</body>
+</html>
