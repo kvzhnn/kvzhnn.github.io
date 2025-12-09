@@ -3,7 +3,7 @@
 /* --- 1. 基礎設定 --- */
 #thought-experiment {
     background-color: #0d0d0d !important; /* 電影院全黑背景 */
-    color: #e0e0e0;
+    color: var(--text-primary);
     position: relative;
     /* 這裡不設 padding，因為我們要精準控制 sticky 高度 */
     padding: 0; 
@@ -109,17 +109,9 @@
     display: inline-block;
     
     /* 背景與形狀 */
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(255, 255, 255, 0.5);
     border-radius: 12px;
     padding: 12px 24px;
-    
-    /* 字體設定 */
-    font-family: var(--font-serif);
-    font-weight: 570;
-    color: #ffffff;
-    
-    /* 這裡設定基礎字體大小 */
-    font-size: 1.6rem; 
     
     line-height: 1.6;
     letter-spacing: 0.05em;
@@ -137,29 +129,6 @@
 .movie-subtitle.active {
     opacity: 1;
     transform: translateY(0);
-}
-
-/* === 特殊狀態：疼痛強調樣式 === */
-.movie-subtitle.pain-highlight {
-    /* 1. 變成鮮紅色 */
-    color: #ff3333 !important;
-    
-    /* 2. 字體變大 (從 1.6rem -> 2.2rem) */
-    font-size: 2.2rem;
-    
-    /* 3. 紅色光暈 */
-    text-shadow: 
-        0 0 10px rgba(255, 50, 50, 0.9),
-        0 0 20px rgba(255, 0, 0, 0.6);
-        
-    /* 4. 移除背景與邊框 */
-    background-color: rgba(0, 0, 0, 0.7);
-    border: none;
-    box-shadow: none;
-    
-    /* 🔥 關鍵修改：進入疼痛模式時，針對 font-size 做彈性動畫 */
-    /* 這樣變大時會有衝擊感，但變回去時會瞬間復原 */
-    transition: font-size 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s, transform 0.3s;
 }
 
 /* 當加上 active class 時，字幕浮現 */
@@ -189,7 +158,6 @@
 .cards-section-wrapper {
     position: relative;
     z-index: 20;
-    background-color: #0d0d0d; /* 延續背景色 */
     padding-bottom: 80px;
     min-height: 100vh; /* 確保有足夠空間顯示卡片 */
 }
@@ -275,9 +243,6 @@
 }
 
 .te-feedback-title {
-    font-family: var(--font-serif);
-    font-weight: 700;
-    font-size: 1.3rem;
     margin-bottom: 1.5rem;
     color: var(--accent-color);
     position: relative;
@@ -296,7 +261,6 @@
     font-size: 1rem;
     line-height: 1.8;
     text-align: justify;
-    color: #444;
 }
 
 /* RWD */
@@ -312,7 +276,6 @@
 #intro {
     position: relative;
     width: 100%;
-    background-color: #0d0d0d;
     /* 這裡不需要設定高度，高度會由文字軌道撐開 */
 }
 
@@ -334,8 +297,6 @@
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    opacity: 0.6; /* 調暗一點讓白字清楚 */
-    
     /* 全圖呼吸動畫 */
     animation: pain-breathing 6s infinite ease-in-out;
 }
@@ -346,22 +307,11 @@
     100% { transform: scale(1); }
 }
 
-.intro-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.1), #0d0d0d); /* 底部漸黑 */
-}
 
 /* 2. 捲動軌道 (Scroll Track) */
 .intro-scroll-track {
     position: relative;
     z-index: 5; /* 關鍵：層級比背景高，確保文字浮在上面 */
-    
-    /* 🔥 超級關鍵：負邊距重疊 🔥 */
-    /* 這行會把文字軌道往上拉 100vh，直接覆蓋在背景圖上 */
     margin-top: -100vh; 
     
     padding-bottom: 20vh; /* 底部留白緩衝 */
@@ -393,34 +343,11 @@
 
 /* 4. 字體設定 */
 .intro-text {
-    font-family: var(--font-serif);
-    font-size: 1.5rem;
-    color: #e0e0e0;
+    color: var(--accent-color);
     line-height: 1.8;
     margin-bottom: 2rem;
     letter-spacing: 0.05em;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-}
-
-.intro-highlight {
-    font-family: var(--font-serif);
-    font-size: 2rem;
-    font-weight: 700;
-    color: #ffffff;
-    line-height: 1.4;
-    letter-spacing: 0.1em;
-    position: relative;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-}
-
-.intro-highlight::after {
-    content: '';
-    display: block;
-    width: 60px;
-    height: 2px;
-    background: #fff;
-    margin: 20px 0 0 0; /* 靠左對齊 */
-    opacity: 0.7;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 /* RWD: 手機版調整 */
@@ -431,14 +358,6 @@
         text-align: center;
         /* 手機版背景圖可能會比較亂，加深文字底色 */
         background: radial-gradient(circle, rgba(0,0,0,0.4) 0%, transparent 70%); 
-    }
-    
-    .intro-highlight::after {
-        margin: 20px auto 0; /* 手機版線條置中 */
-    }
-    
-    .intro-scroll-track {
-        margin-top: -100vh; /* 手機版也要維持負邊距 */
     }
 }
 
@@ -466,20 +385,9 @@
 /* 氣泡本體設計 - 改為深色、沉重風格 */
 .thought-bubble {
     position: absolute;
-    
-    /* 深色半透明背景 (像黑霧或瘀青) */
-    background-color: rgba(20, 20, 20, 0.85);
-    
-    /* 邊框微光，像是在黑暗中發著冷光 */
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    
-    /* 沉重的陰影 */
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
-    
+        
     /* 字體設定：白色襯線體，更有戲劇張力 */
-    color: #e0e0e0;
-    font-family: var(--font-serif);
-    font-weight: 700;
+    color: var(--color-white);
     font-size: 1.1rem;
     letter-spacing: 0.05em;
     
@@ -546,8 +454,6 @@
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    opacity: 0.5; /* 調整透明度，讓白字更清楚 */
-    
 }
 
 /* 黑色遮罩 */
@@ -592,8 +498,7 @@
 
 /* 字體樣式 */
 .outro-text-block p {
-    font-family: var(--font-serif);
-    color: #ffffff;
+    color: var(--color-white);
     font-size: 1.8rem;
     font-weight: 700;
     line-height: 1.8;
@@ -613,15 +518,11 @@
     text-shadow: 0 0 30px rgba(255,255,255,0.3);
 }
 
-/* css/your-section.css */
-
 /* === 重點特效：淺色底 + 黑色文字版 === */
 .red-spot {
     display: inline;
     position: relative;
-    
-    /* 1. 初始狀態：文字設為深灰色 (未被強調時稍微隱沒在黑背景中) */
-    color: #666666; 
+    color: var(--text-primary);
     
     -webkit-box-decoration-break: clone;
     box-decoration-break: clone;
@@ -661,4 +562,14 @@
         padding: 2px 8px;
         line-height: 1.8;
     }
+}
+
+
+.outro-container {
+    background: linear-gradient(
+        to bottom,
+        var(--bg-content) 0%,
+        var(--bg-bridge) 40%,
+        var(--bg-content) 100%
+    );
 }
